@@ -1,0 +1,6 @@
+{
+  "appDesc": {
+    "message": "讓 Discord 留成純文字的 Markdown 表格、標題和格式正常顯示。V-AX (v-ax.com)",
+    "description": "Extension description shown in chrome://extensions/ and install dialog"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "default_locale": "en",
+  "name": "Discord Markdown Renderer",
+  "version": "2026.11.2",
+  "description": "__MSG_appDesc__",
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://discord.com/*",
+        "https://*.discord.com/*",
+        "https://canary.discord.com/*",
+        "https://ptb.discord.com/*"
+      ],
+      "js": ["content_script.js"],
+      "css": ["style.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}

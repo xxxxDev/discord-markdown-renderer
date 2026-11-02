@@ -1,0 +1,6 @@
+{
+  "appDesc": {
+    "message": "Render the Markdown tables, headings and formatting that Discord leaves as plain text. V-AX (v-ax.com)",
+    "description": "Extension description shown in chrome://extensions/ and install dialog"
+  }
+}

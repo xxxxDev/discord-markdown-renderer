@@ -1,0 +1,121 @@
+/* Discord Markdown Table Renderer — 渲染樣式 */
+
+.md-table-original-hidden,
+.md-inline-original-hidden {
+  display: none !important;
+}
+
+/* v1.2 inline-markdown fallback — rendered after the table pass */
+hr.md-inline-rendered {
+  border: none;
+  border-top: 1px solid var(--background-modifier-accent, #3f4147);
+  margin: 8px 0;
+}
+strong.md-inline-rendered { font-weight: 700; }
+em.md-inline-rendered { font-style: italic; }
+s.md-inline-rendered { text-decoration: line-through; }
+u.md-inline-rendered { text-decoration: underline; }
+.md-inline-rendered.md-heading {
+  display: block;
+  font-weight: 700;
+  color: var(--header-primary, #fff);
+  margin: 8px 0 4px;
+  line-height: 1.25;
+}
+.md-inline-rendered.md-heading-1 { font-size: 1.5em; }
+.md-inline-rendered.md-heading-2 { font-size: 1.25em; }
+.md-inline-rendered.md-heading-3 { font-size: 1.1em; }
+
+@media (prefers-color-scheme: light) {
+  hr.md-inline-rendered { border-top-color: #e3e5e8; }
+  .md-inline-rendered.md-heading { color: #060607; }
+}
+
+.md-table-rendered {
+  margin-top: 8px;
+  margin-bottom: 4px;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.md-table-rendered table {
+  border-collapse: collapse;
+  font-size: 13px;
+  font-family: var(--font-primary, 'gg sans', 'Noto Sans', sans-serif);
+  background: var(--background-secondary, #2b2d31);
+  border: 1px solid var(--background-modifier-accent, #3f4147);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.md-table-rendered th,
+.md-table-rendered td {
+  padding: 6px 12px;
+  border: 1px solid var(--background-modifier-accent, #3f4147);
+  text-align: left;
+  color: var(--text-normal, #dbdee1);
+  vertical-align: top;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.md-table-rendered th {
+  background: var(--background-tertiary, #1e1f22);
+  font-weight: 600;
+  color: var(--header-primary, #fff);
+}
+
+.md-table-rendered tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.md-table-rendered tbody tr:hover {
+  background: var(--background-modifier-hover, rgba(78, 80, 88, 0.3));
+}
+
+/* Bridge / continuation visual stitching:
+   - A continuation table loses its top decoration so it reads as the
+     extension of the table on the previous Discord message.
+   - The table being continued (marked by content_script.js when the next
+     message renders a continuation) loses its matching bottom decoration. */
+.md-table-rendered[data-md-table-continuation] {
+  margin-top: -4px;
+}
+.md-table-rendered[data-md-table-continuation] table {
+  border-top: none;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+.md-table-rendered[data-md-table-followed-by-continuation] {
+  margin-bottom: 0;
+}
+.md-table-rendered[data-md-table-followed-by-continuation] table {
+  border-bottom: none;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* Close the Discord message-item gap so the two halves visually meet.
+   The CSS-`:has()` selector lets us target the message LI without naming
+   Discord's mangled class names; widely supported since Chrome 105. */
+[id^="chat-messages-"]:has(.md-table-rendered[data-md-table-continuation]) {
+  margin-top: -16px !important;
+  padding-top: 0 !important;
+}
+
+/* light theme fallback */
+@media (prefers-color-scheme: light) {
+  .md-table-rendered table {
+    background: #fff;
+    border-color: #e3e5e8;
+  }
+  .md-table-rendered th,
+  .md-table-rendered td {
+    color: #2e3338;
+    border-color: #e3e5e8;
+  }
+  .md-table-rendered th {
+    background: #f2f3f5;
+    color: #060607;
+  }
+}

@@ -72,7 +72,7 @@ Discord 不會渲染 Markdown 表格，零散的符號也可能讓其他格式�
 
 1. 在瀏覽器或桌面版（Electron，同樣有 DevTools）開啟 Discord，再開啟 DevTools Console。
 2. 貼上整份 `inject_console.js`，或複製 [Gist](https://gist.github.com/xxxxDev/d7452492a2183116736735b6cf417926) 上的腳本，然後按 Enter。
-3. 應該會看到 `[discord-markdown-renderer] injected v2026.11.2`。
+3. 應該會看到 `[discord-markdown-renderer] injected v2026.11.11`。
 
 貼上前請先看過腳本：在 Console 執行的任何內容都能存取你的 Discord 工作階段。
 

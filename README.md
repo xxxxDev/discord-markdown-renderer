@@ -72,7 +72,7 @@ You can paste the script into the DevTools Console instead. It stops working whe
 
 1. Open Discord, in a browser or in the desktop app (an Electron app with the same DevTools), and open the DevTools Console.
 2. Paste all of `inject_console.js`, or copy the script from the [Gist](https://gist.github.com/xxxxDev/d7452492a2183116736735b6cf417926), and press Enter.
-3. You should see `[discord-markdown-renderer] injected v2026.11.2`.
+3. You should see `[discord-markdown-renderer] injected v2026.11.11`.
 
 Read a script before you paste it: anything run in the Console can access your Discord session.
 

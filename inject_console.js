@@ -3,7 +3,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.11.2';
+  const VERSION = '2026.11.11';
 
   // Self-cleanup: tear down a previous injection if present
   if (window.__discordMdTable) {

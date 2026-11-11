@@ -50,7 +50,7 @@ The extension is on the [Chrome Web Store](https://chromewebstore.google.com/det
 To run it from this repository:
 
 1. Open `chrome://extensions/` and turn on **Developer mode**.
-2. Choose **Load unpacked** and select the `discord-markdown-renderer-extension` folder.
+2. Choose **Load unpacked** and select the `extension` folder.
 3. Reload Discord.
 
 ## Use it
@@ -89,7 +89,7 @@ Read a script before you paste it: anything run in the Console can access your D
 
 The script watches the message list, finds Markdown in the visible text, hides the original text and places the rendered result beside it. It does not change Discord's own structure, so it can safely run again when Discord redraws a message.
 
-The extension's logic is in `discord-markdown-renderer-extension/content_script.js`. `inject_console.js` is the same logic with its styles included and cleanup for repeat pastes. Version history is in the GitHub releases.
+The extension's logic is in `extension/content_script.js`. `inject_console.js` is the same logic with its styles included and cleanup for repeat pastes. Version history is in the GitHub releases.
 
 ## Privacy and permissions
 

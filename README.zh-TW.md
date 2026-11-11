@@ -50,7 +50,7 @@ Discord 不會渲染 Markdown 表格，零散的符號也可能讓其他格式�
 想直接從這個 repo 執行：
 
 1. 開啟 `chrome://extensions/`，打開「**開發人員模式**」。
-2. 選「**載入未封裝項目**」，選擇 `discord-markdown-renderer-extension` 資料夾。
+2. 選「**載入未封裝項目**」，選擇 `extension` 資料夾。
 3. 重新載入 Discord。
 
 ## 使用方式
@@ -89,7 +89,7 @@ Discord 不會渲染 Markdown 表格，零散的符號也可能讓其他格式�
 
 腳本會監看訊息列表，從看得到的文字裡找出 Markdown，隱藏原文並在旁邊放上渲染結果。它不改 Discord 本身的結構，所以 Discord 重畫訊息時可以安全地再跑一次。
 
-擴充功能的邏輯在 `discord-markdown-renderer-extension/content_script.js`。`inject_console.js` 是相同的邏輯，另外內含樣式和重複貼上時的清理。版本紀錄在 GitHub releases。
+擴充功能的邏輯在 `extension/content_script.js`。`inject_console.js` 是相同的邏輯，另外內含樣式和重複貼上時的清理。版本紀錄在 GitHub releases。
 
 ## 隱私與權限
 

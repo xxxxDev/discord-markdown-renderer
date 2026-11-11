@@ -5,3 +5,4 @@ tests/
 .local/
 .env
 logs/
+dist/

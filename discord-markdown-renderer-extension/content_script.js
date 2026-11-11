@@ -1,4 +1,4 @@
-// Discord Markdown Renderer — extension content script.
+// Discord Markdown Renderer; extension content script.
 // Renders markdown Discord drops (tables, ---, **/***/__/~~, # headings) and unwraps Discord parser overruns.
 // Per-message pipeline: normalizeBrokenInlines → processMessage (tables + continuation) → processInlinePatterns.
 // Idempotent via data-md-tables / data-md-inline; MutationObserver re-runs on React re-render.
@@ -35,7 +35,7 @@
   const ROW_RE = /^\s*\|.*\|\s*$/;
   const SEP_RE = /^\s*\|(\s*:?-{2,}:?\s*\|)+\s*$/;
 
-  // Returns [{ headers, rows, charStart, charEnd }] — char ranges drive DOM Range hiding.
+  // Returns [{ headers, rows, charStart, charEnd }]; char ranges drive DOM Range hiding.
   function findTables(text) {
     const lines = text.split('\n');
     const tables = [];
@@ -214,7 +214,7 @@
         return;
       }
       // Discord renders some emojis (✅❌ etc.) as <img class="emoji" alt="…">.
-      // Without this, emoji-only table cells parse as "" — see 5/28 ✅❌ table bug.
+      // Without this, emoji-only table cells parse as "".
       if (tag === 'IMG' && node.alt) {
         const alt = node.alt;
         nodeMap.push({ node, start: text.length, end: text.length + alt.length, isElement: true });
@@ -249,7 +249,7 @@
 
     const range = document.createRange();
     try {
-      // Element entries (img.alt synthetic) can't take offsets — use boundary-by-node setters.
+      // Element entries (img.alt synthetic) can't take offsets; use boundary-by-node setters.
       if (startEntry.isElement) range.setStartBefore(startEntry.node);
       else range.setStart(startEntry.node, charStart - startEntry.start);
       if (endEntry.isElement) range.setEndAfter(endEntry.node);
@@ -276,7 +276,7 @@
     return all[idx - 1];
   }
 
-  // Follower messages return null — they lack their own header; caller walks back to the group leader.
+  // Follower messages return null; they lack their own header; caller walks back to the group leader.
   function extractAuthorFromItem(item) {
     if (!item) return null;
     // `img[alt]` alone also matched inline emoji <img>; require avatar class.
@@ -330,7 +330,7 @@
     return a === b;
   }
 
-  // Last rendered table in prev — includes continuation tables so multi-msg chains link; excludes synthesized split-tables (owned by a later msg's merge).
+  // Last rendered table in prev; includes continuation tables so multi-msg chains link; excludes synthesized split-tables (owned by a later msg's merge).
   function getPreviousTableColumnCount(prev) {
     if (!prev) return null;
     const tables = prev.querySelectorAll(`.md-table-rendered[${COLS_ATTR}]:not([${SPLIT_TABLE_ATTR}])`);
@@ -521,11 +521,11 @@
     return el;
   }
 
-  // Multi-line inline tags are Discord parser overruns — unwrap. <pre> excluded.
+  // Multi-line inline tags are Discord parser overruns; unwrap. <pre> excluded.
   const BROKEN_INLINE_TAGS = new Set(['CODE', 'EM', 'STRONG', 'U', 'S']);
   function normalizeBrokenInlines(el) {
     if (!el) return;
-    // Fast-skip — scheduleScan can fire ~5×/sec, this querySelectorAll otherwise per scan.
+    // Fast-skip; scheduleScan can fire ~5×/sec, this querySelectorAll otherwise per scan.
     if (el.hasAttribute(NORMALIZED_ATTR)) return;
     const candidates = el.querySelectorAll('code, em, strong, u, s');
     for (const node of candidates) {
@@ -585,19 +585,19 @@
       const val = el.getAttribute(MARK_ATTR);
       const expectedOwn = val === MERGED_VALUE ? 0 : parseInt(val, 10);
       if (Number.isFinite(expectedOwn)) {
-        // Exclude split-tables — owned by neighbour's merge, not own state.
+        // Exclude split-tables; owned by neighbour's merge, not own state.
         const actualOwn = el.querySelectorAll(`.md-table-rendered:not([${SPLIT_TABLE_ATTR}])`).length;
         if (actualOwn === expectedOwn) {
           const mergedInto = el.getAttribute(MERGED_INTO_ATTR);
           if (!mergedInto) return;
           // Chain-aware: our rows live in the owner named by MERGED_INTO_ATTR, which may be
-          // several messages back (3+ msg split). Verify by our own per-message row tag —
+          // several messages back (3+ msg split). Verify by our own per-message row tag; 
           // the owner's MERGED_WITH gets overwritten by later merges and would false-fail.
           const ownerForCheck = document.getElementById(mergedInto);
           if (ownerForCheck && ownerForCheck.querySelector(`tr[${MERGED_ROW_ATTR}="${el.id}"]`)) {
             return;
           }
-          // merge state lost (React re-rendered owner) — fall through to rebuild
+          // merge state lost (React re-rendered owner); fall through to rebuild
         }
       }
     }
@@ -608,7 +608,7 @@
       parent.removeChild(w);
     });
     el.querySelectorAll(`.md-table-rendered:not([${SPLIT_TABLE_ATTR}])`).forEach((n) => n.remove());
-    // Drop inline residue — its wrappers anchor to nodes the table pass re-arranges.
+    // Drop inline residue; its wrappers anchor to nodes the table pass re-arranges.
     el.querySelectorAll('.md-inline-rendered').forEach((n) => n.remove());
     el.querySelectorAll(`.${HIDDEN_INLINE_CLASS}`).forEach((w) => {
       const parent = w.parentNode;
@@ -617,7 +617,7 @@
       parent.removeChild(w);
     });
     el.removeAttribute(INLINE_MARK_ATTR);
-    // Force re-normalize — React may have re-rendered and brought overruns back.
+    // Force re-normalize; React may have re-rendered and brought overruns back.
     el.removeAttribute(NORMALIZED_ATTR);
     normalizeBrokenInlines(el);
 
@@ -664,7 +664,7 @@
           // Bridge (mid-row reassembly) only applies to the directly-adjacent owner. In a
           // 3+ message chain the immediate prev is already merged away, so there's no clean
           // adjacent tail to bridge. Only restore the owner's bridge fragments when about to
-          // RE-DO that bridge (adjacent) — un-hiding a chained owner's still-valid bridge
+          // RE-DO that bridge (adjacent); un-hiding a chained owner's still-valid bridge
           // would orphan its text back into view.
           let bridge = null;
           let prevMap = null;
@@ -707,7 +707,7 @@
             }
           }
 
-          // Last rendered table — matches getPreviousTableColumnCount; cols re-check guards state drift.
+          // Last rendered table; matches getPreviousTableColumnCount; cols re-check guards state drift.
           const prevTablesAll = owner.querySelectorAll(`.md-table-rendered[${COLS_ATTR}]:not([${SPLIT_TABLE_ATTR}])`);
           const prevTable = prevTablesAll.length > 0 ? prevTablesAll[prevTablesAll.length - 1] : null;
           const prevTableCols = prevTable ? parseInt(prevTable.getAttribute(COLS_ATTR), 10) : null;
@@ -724,7 +724,7 @@
           if (prevTable && prevTableCols === prevCols) {
             const prevTbody = prevTable.querySelector('tbody');
             if (prevTbody) {
-              // Build fragment in memory before mutating prev — transaction shape.
+              // Build fragment in memory before mutating prev; transaction shape.
               const fragment = document.createDocumentFragment();
               for (const row of rows) {
                 const tr = document.createElement('tr');
@@ -767,7 +767,7 @@
                 rollbackBridge();
               }
             } else {
-              // Headerless fallback — prev has cols but no usable tbody.
+              // Headerless fallback; prev has cols but no usable tbody.
               const wrapper = hideRange(nodeMap, currentHideStart, cont.charEnd);
               const tableNode = document.createElement('div');
               tableNode.className = 'md-table-rendered';
@@ -783,14 +783,14 @@
               contFallbackRendered = true;
             }
           } else {
-            // prevTable absent or cols mismatch — leave raw markdown visible.
+            // prevTable absent or cols mismatch; leave raw markdown visible.
             rollbackBridge();
           }
         }
       }
     }
 
-    // Split-table tail — mutually exclusive with cont (cont bails on SEP_RE).
+    // Split-table tail; mutually exclusive with cont (cont bails on SEP_RE).
     if (!cont) {
       const splitTail = findLeadingSeparatorTable(text);
       if (splitTail) {
@@ -834,7 +834,7 @@
                       prev.appendChild(tableNode);
                     }
                     el.setAttribute(MERGED_INTO_ATTR, prev.id);
-                    // Fall through to own-tables loop — own tables after split-tail still render.
+                    // Fall through to own-tables loop; own tables after split-tail still render.
                   } else {
                     const p = prevHeaderWrapper.parentNode;
                     while (prevHeaderWrapper.firstChild) p.insertBefore(prevHeaderWrapper.firstChild, prevHeaderWrapper);
@@ -882,7 +882,7 @@
     return `<table>${thead}${tbody}</table>`;
   }
 
-  // Headerless table — no fake header fabricated for continuation segments.
+  // Headerless table; no fake header fabricated for continuation segments.
   function renderContinuationInner(rows) {
     const tbody = `<tbody>${rows
       .map(
@@ -912,7 +912,7 @@
 
   scan();
 
-  // Debounced full scan — channel switch swaps the whole list; per-mutation handling is too granular.
+  // Debounced full scan; channel switch swaps the whole list; per-mutation handling is too granular.
   let scanScheduled = false;
   function scheduleScan() {
     if (scanScheduled) return;
@@ -928,7 +928,7 @@
     }
   }
 
-  // Skip scans for input typing, sidebar, reaction pickers, modals — only message-list mutations matter.
+  // Skip scans for input typing, sidebar, reaction pickers, modals; only message-list mutations matter.
   function isInputAreaTarget(target) {
     const start = target && target.nodeType === 1 ? target : (target && target.parentNode);
     let cur = start;

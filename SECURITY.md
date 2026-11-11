@@ -10,7 +10,7 @@ The extension runs only on Discord's web pages (`discord.com` and its subdomains
 
 - It changes only how messages are drawn on your screen. It doesn't send, edit or delete messages, and other people still see the original text.
 - What you see is a rendered version of the message, not the text that was sent. To check the original, turn the extension off and reload Discord.
-- It runs in Chrome on Discord's web pages only. It does nothing in the Discord desktop app or on other sites.
+- The extension runs in Chrome on Discord's web pages only, and does nothing on other sites. The console script can also be pasted into the DevTools Console of the Discord desktop app, which is an Electron app.
 - Only paste a script into the DevTools Console if you have read it and got it from a source you trust: anything pasted there runs with access to your Discord session.
 
 ## Reporting a vulnerability

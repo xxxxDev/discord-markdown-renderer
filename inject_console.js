@@ -317,7 +317,7 @@ u.md-inline-rendered { text-decoration: underline; }
       const tag = node.tagName;
       if (tag === 'BR') { text += '\n'; return; }
       // Discord renders some emojis (✅❌ etc.) as <img class="emoji" alt="…">.
-      // Without this, emoji-only table cells parse as "" — see 5/28 ✅❌ table bug.
+      // Without this, emoji-only table cells parse as "".
       if (tag === 'IMG' && node.alt) {
         const alt = node.alt;
         nodeMap.push({ node, start: text.length, end: text.length + alt.length, isElement: true });
@@ -345,7 +345,7 @@ u.md-inline-rendered { text-decoration: underline; }
     if (!startEntry) return null;
     const range = document.createRange();
     try {
-      // Element entries (img.alt synthetic) can't take offsets — use boundary-by-node setters.
+      // Element entries (img.alt synthetic) can't take offsets; use boundary-by-node setters.
       if (startEntry.isElement) range.setStartBefore(startEntry.node);
       else range.setStart(startEntry.node, charStart - startEntry.start);
       if (endEntry.isElement) range.setEndAfter(endEntry.node);
@@ -369,7 +369,7 @@ u.md-inline-rendered { text-decoration: underline; }
     return all[idx - 1];
   }
 
-  // Follower messages lack their own header — walk back to the group leader.
+  // Follower messages lack their own header; walk back to the group leader.
   function extractAuthorFromItem(item) {
     if (!item) return null;
     // `img[alt]` alone also matched inline emoji <img>; require avatar class.
@@ -421,7 +421,7 @@ u.md-inline-rendered { text-decoration: underline; }
     return a === b;
   }
 
-  // Excludes synthesized split-tables — they're owned by a later msg's merge, not prev's own state.
+  // Excludes synthesized split-tables; they're owned by a later msg's merge, not prev's own state.
   function getPreviousTableColumnCount(prev) {
     if (!prev) return null;
     const tables = prev.querySelectorAll(`.md-table-rendered[${COLS_ATTR}]:not([${SPLIT_TABLE_ATTR}])`);
@@ -611,7 +611,7 @@ u.md-inline-rendered { text-decoration: underline; }
     return el;
   }
 
-  // Multi-line inline tags are Discord parser overruns — unwrap. <pre> excluded.
+  // Multi-line inline tags are Discord parser overruns; unwrap. <pre> excluded.
   const BROKEN_INLINE_TAGS = new Set(['CODE', 'EM', 'STRONG', 'U', 'S']);
   function normalizeBrokenInlines(el) {
     if (!el) return;
@@ -674,20 +674,20 @@ u.md-inline-rendered { text-decoration: underline; }
       const val = el.getAttribute(MARK_ATTR);
       const expectedOwn = val === MERGED_VALUE ? 0 : parseInt(val, 10);
       if (Number.isFinite(expectedOwn)) {
-        // Exclude split-tables — owned by neighbour's merge, not own state.
+        // Exclude split-tables; owned by neighbour's merge, not own state.
         const actualOwn = el.querySelectorAll(`.md-table-rendered:not([${SPLIT_TABLE_ATTR}])`).length;
         if (actualOwn === expectedOwn) {
           const mergedInto = el.getAttribute(MERGED_INTO_ATTR);
           if (!mergedInto) return; // no merge expected, state intact
           // Chain-aware: our rows live in the owner named by MERGED_INTO_ATTR, which may
           // be several messages back (3+ msg split), not the immediate prev. Verify by our
-          // own per-message row tag rather than the owner's last-writer MERGED_WITH attr —
+          // own per-message row tag rather than the owner's last-writer MERGED_WITH attr; 
           // the latter gets overwritten by later merges and would falsely fail here (→ ping-pong).
           const ownerForCheck = document.getElementById(mergedInto);
           if (ownerForCheck && ownerForCheck.querySelector(`tr[${MERGED_ROW_ATTR}="${el.id}"]`)) {
             return; // merge still intact
           }
-          // merge state lost (React re-rendered owner) — fall through to rebuild
+          // merge state lost (React re-rendered owner); fall through to rebuild
         }
       }
     }
@@ -698,7 +698,7 @@ u.md-inline-rendered { text-decoration: underline; }
       parent.removeChild(w);
     });
     el.querySelectorAll(`.md-table-rendered:not([${SPLIT_TABLE_ATTR}])`).forEach((n) => n.remove());
-    // Drop inline residue — its wrappers anchor to nodes the table pass re-arranges.
+    // Drop inline residue; its wrappers anchor to nodes the table pass re-arranges.
     el.querySelectorAll('.md-inline-rendered').forEach((n) => n.remove());
     el.querySelectorAll(`.${HIDDEN_INLINE_CLASS}`).forEach((w) => {
       const parent = w.parentNode;
@@ -707,7 +707,7 @@ u.md-inline-rendered { text-decoration: underline; }
       parent.removeChild(w);
     });
     el.removeAttribute(INLINE_MARK_ATTR);
-    // Force re-normalize — React may have re-rendered and brought overruns back.
+    // Force re-normalize; React may have re-rendered and brought overruns back.
     el.removeAttribute(NORMALIZED_ATTR);
     normalizeBrokenInlines(el);
 
@@ -751,10 +751,10 @@ u.md-inline-rendered { text-decoration: underline; }
         if (colCounts.every((c) => c === prevCols)) {
           // Bridge (mid-row reassembly) only applies to the directly-adjacent owner. In a
           // 3+ message chain the immediate prev is already merged away (owner is further
-          // back), so there is no clean adjacent tail to bridge — merge whole rows instead.
+          // back), so there is no clean adjacent tail to bridge; merge whole rows instead.
           // Only restore (un-hide) the owner's bridge fragments when we are about to RE-DO
           // that bridge (adjacent case). In the chained case the owner's existing bridge
-          // belongs to an earlier, still-valid merge — un-hiding it would orphan that text
+          // belongs to an earlier, still-valid merge; un-hiding it would orphan that text
           // back into view.
           let bridge = null;
           let prevMap = null;
@@ -766,7 +766,7 @@ u.md-inline-rendered { text-decoration: underline; }
 
           // Tail-fill (non-adjacent split): a leading partial-row fragment in this message
           // (no leading '|', ends with '|') whose cells exactly fill the trailing EMPTY cells
-          // of the owner's current last row — a row split across a boundary the adjacent
+          // of the owner's current last row; a row split across a boundary the adjacent
           // text-bridge can't reach (3-msg split). Reversible via TAIL_FILLED_BY_ATTR.
           let tailFill = null;
           {
@@ -798,7 +798,7 @@ u.md-inline-rendered { text-decoration: underline; }
             }
           }
 
-          // Last rendered table on the owner — matches getPreviousTableColumnCount; cols re-check guards state drift.
+          // Last rendered table on the owner; matches getPreviousTableColumnCount; cols re-check guards state drift.
           const prevTablesAll = owner.querySelectorAll(`.md-table-rendered[${COLS_ATTR}]:not([${SPLIT_TABLE_ATTR}])`);
           const prevTable = prevTablesAll.length > 0 ? prevTablesAll[prevTablesAll.length - 1] : null;
           const prevTableCols = prevTable ? parseInt(prevTable.getAttribute(COLS_ATTR), 10) : null;
@@ -815,7 +815,7 @@ u.md-inline-rendered { text-decoration: underline; }
           if (prevTable && prevTableCols === prevCols) {
             const prevTbody = prevTable.querySelector('tbody');
             if (prevTbody) {
-              // Build fragment in memory before mutating prev — transaction shape.
+              // Build fragment in memory before mutating prev; transaction shape.
               const fragment = document.createDocumentFragment();
               for (const row of rows) {
                 const tr = document.createElement('tr');
@@ -881,7 +881,7 @@ u.md-inline-rendered { text-decoration: underline; }
       }
     }
 
-    // Split-table tail — mutually exclusive with cont (cont bails on SEP_RE).
+    // Split-table tail; mutually exclusive with cont (cont bails on SEP_RE).
     if (!cont) {
       const splitTail = findLeadingSeparatorTable(text);
       if (splitTail) {
@@ -987,7 +987,7 @@ u.md-inline-rendered { text-decoration: underline; }
     }
   }
 
-  // Skip scans for input typing, sidebar, reaction pickers, modals — only message-list mutations matter.
+  // Skip scans for input typing, sidebar, reaction pickers, modals; only message-list mutations matter.
   function isInputAreaTarget(target) {
     const start = target && target.nodeType === 1 ? target : (target && target.parentNode);
     let cur = start;

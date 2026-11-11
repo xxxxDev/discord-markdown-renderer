@@ -70,7 +70,7 @@ You should see a table in place of the raw text.
 
 You can paste the script into the DevTools Console instead. It stops working when you reload Discord, so paste it again after that.
 
-1. Open Discord and open the DevTools Console.
+1. Open Discord, in a browser or in the desktop app (an Electron app with the same DevTools), and open the DevTools Console.
 2. Paste all of `inject_console.js`, or copy the script from the [Gist](https://gist.github.com/xxxxDev/d7452492a2183116736735b6cf417926), and press Enter.
 3. You should see `[discord-markdown-renderer] injected v2026.11.2`.
 

@@ -70,7 +70,7 @@ Discord 不會渲染 Markdown 表格，零散的符號也可能讓其他格式�
 
 也可以把腳本貼到 DevTools Console。重新載入 Discord 後就會失效，到時候再貼一次即可。
 
-1. 開啟 Discord 和 DevTools Console。
+1. 在瀏覽器或桌面版（Electron，同樣有 DevTools）開啟 Discord，再開啟 DevTools Console。
 2. 貼上整份 `inject_console.js`，或複製 [Gist](https://gist.github.com/xxxxDev/d7452492a2183116736735b6cf417926) 上的腳本，然後按 Enter。
 3. 應該會看到 `[discord-markdown-renderer] injected v2026.11.2`。
 

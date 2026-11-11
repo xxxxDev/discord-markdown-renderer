@@ -1,11 +1,12 @@
 <p align="center">
-  <img src="discord-markdown-renderer-extension/icon128.png" width="96" alt="Discord Markdown Renderer 圖示">
+  <img src=".github/assets/icon.png" width="128" alt="Discord Markdown Renderer 的圖示">
 </p>
 
 <h1 align="center">Discord Markdown Renderer</h1>
 
 <p align="center">
-  <b>讓 Discord 留成純文字的 Markdown 表格、標題和格式正常顯示。</b>
+  <b>讓 Discord 留成純文字的 Markdown 表格、標題和格式正常顯示。</b><br>
+  用於網頁版 Discord 的 Chrome 擴充功能，不用設定，也不要求額外權限。
 </p>
 
 <p align="center">
@@ -17,15 +18,15 @@
 </p>
 
 <p align="center">
-  <img src=".github/assets/table.zh-TW.png" alt="Discord 裡的 Markdown 表格，安裝前後對照">
+  <img src=".github/assets/screens/table-zh-TW.png" alt="Discord 裡的 Markdown 表格，安裝前後對照">
 </p>
 
 <p align="center">
-  <img src=".github/assets/formatting.zh-TW.png" alt="Discord 裡的標題和文字樣式，安裝前後對照">
+  <img src=".github/assets/screens/formatting-zh-TW.png" alt="Discord 裡的標題和文字樣式，安裝前後對照">
 </p>
 
 <p align="center">
-  <img src=".github/assets/split-table.zh-TW.png" alt="被切成多則訊息的表格合回同一張">
+  <img src=".github/assets/screens/split-table-zh-TW.png" alt="被切成多則訊息的表格合回同一張">
 </p>
 
 ---
@@ -90,14 +91,18 @@ Discord 不會渲染 Markdown 表格，零散的符號也可能讓其他格式�
 
 擴充功能的邏輯在 `discord-markdown-renderer-extension/content_script.js`。`inject_console.js` 是相同的邏輯，另外內含樣式和重複貼上時的清理。版本紀錄在 GitHub releases。
 
+## 隱私與權限
+
+這個擴充功能只在 Discord 網頁上執行。它不要求額外權限、不發出網路要求，也不儲存任何資料。詳情請看 [SECURITY.md](SECURITY.md)。
+
 ## 參與貢獻
 
 請看 [CONTRIBUTING.md](CONTRIBUTING.md)。資安問題請看 [SECURITY.md](SECURITY.md)。
 
-## 隱私
-
-這個擴充功能只在 Discord 網頁上執行。它不要求額外權限、不發出網路要求，也不儲存任何資料。
-
 ## 授權
 
-[MIT](LICENSE)。圖示不在授權範圍內，請看 [BRAND.md](BRAND.md)。
+程式碼以 [MIT License](LICENSE) 釋出。圖示不在此授權內，見 [BRAND.md](BRAND.md)。
+
+Discord Markdown Renderer 是獨立專案，並非由 Discord 製作，也與其沒有關係或背書。Discord 是 Discord Inc. 的商標。
+
+由 [V-AX](https://v-ax.com) 製作。

@@ -1,11 +1,12 @@
 <p align="center">
-  <img src="discord-markdown-renderer-extension/icon128.png" width="96" alt="Discord Markdown Renderer icon">
+  <img src=".github/assets/icon.png" width="128" alt="The Discord Markdown Renderer icon">
 </p>
 
 <h1 align="center">Discord Markdown Renderer</h1>
 
 <p align="center">
-  <b>See the Markdown tables, headings and formatting that Discord leaves as plain text.</b>
+  <b>See the Markdown tables, headings and formatting that Discord leaves as plain text.</b><br>
+  A Chrome extension for Discord on the web, with no settings and no extra permissions.
 </p>
 
 <p align="center">
@@ -17,15 +18,15 @@
 </p>
 
 <p align="center">
-  <img src=".github/assets/table.png" alt="A Markdown table in Discord before and after the extension">
+  <img src=".github/assets/screens/table-en.png" alt="A Markdown table in Discord before and after the extension">
 </p>
 
 <p align="center">
-  <img src=".github/assets/formatting.png" alt="Headings and text styles in Discord before and after the extension">
+  <img src=".github/assets/screens/formatting-en.png" alt="Headings and text styles in Discord before and after the extension">
 </p>
 
 <p align="center">
-  <img src=".github/assets/split-table.png" alt="A table split across messages, joined back into one">
+  <img src=".github/assets/screens/split-table-en.png" alt="A table split across messages, joined back into one">
 </p>
 
 ---
@@ -90,14 +91,18 @@ The script watches the message list, finds Markdown in the visible text, hides t
 
 The extension's logic is in `discord-markdown-renderer-extension/content_script.js`. `inject_console.js` is the same logic with its styles included and cleanup for repeat pastes. Version history is in the GitHub releases.
 
+## Privacy and permissions
+
+The extension runs only on Discord's web pages. It asks for no extra permissions, makes no network requests and stores nothing. See [SECURITY.md](SECURITY.md).
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). For a security problem, see [SECURITY.md](SECURITY.md).
 
-## Privacy
-
-The extension runs only on Discord's web pages. It asks for no extra permissions, makes no network requests and stores nothing.
-
 ## License
 
-[MIT](LICENSE). The icon is not covered: see [BRAND.md](BRAND.md).
+The code is under the [MIT License](LICENSE). The icon isn't: see [BRAND.md](BRAND.md).
+
+Discord Markdown Renderer is an independent project. It is not made by, affiliated with or endorsed by Discord. Discord is a trademark of Discord Inc.
+
+Made by [V-AX](https://v-ax.com).

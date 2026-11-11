@@ -29,7 +29,6 @@
       document.querySelectorAll('[data-md-normalized]').forEach((el) =>
         el.removeAttribute('data-md-normalized')
       );
-      console.log('[discord-markdown-renderer] previous instance cleaned up');
     } catch (e) {
       console.warn('[discord-markdown-renderer] cleanup error:', e);
     }
@@ -317,7 +316,7 @@ u.md-inline-rendered { text-decoration: underline; }
           cls.includes('md-inline-rendered')) return;
       const tag = node.tagName;
       if (tag === 'BR') { text += '\n'; return; }
-      // v2.0.4: Discord renders some emojis (✅❌ etc.) as <img class="emoji" alt="…">.
+      // Discord renders some emojis (✅❌ etc.) as <img class="emoji" alt="…">.
       // Without this, emoji-only table cells parse as "" — see 5/28 ✅❌ table bug.
       if (tag === 'IMG' && node.alt) {
         const alt = node.alt;
@@ -352,7 +351,6 @@ u.md-inline-rendered { text-decoration: underline; }
       if (endEntry.isElement) range.setEndAfter(endEntry.node);
       else range.setEnd(endEntry.node, Math.min(charEnd - endEntry.start, endEntry.node.nodeValue.length));
     } catch (e) {
-      console.warn('[discord-markdown-renderer] range error', e);
       return null;
     }
     const fragment = range.extractContents();
@@ -374,7 +372,7 @@ u.md-inline-rendered { text-decoration: underline; }
   // Follower messages lack their own header — walk back to the group leader.
   function extractAuthorFromItem(item) {
     if (!item) return null;
-    // v2.0.2: `img[alt]` alone also matched inline emoji <img>; require avatar class.
+    // `img[alt]` alone also matched inline emoji <img>; require avatar class.
     const avatar = item.querySelector('img[class*="avatar"][alt]');
     if (avatar && avatar.alt) {
       const alt = avatar.alt.trim();
@@ -734,7 +732,7 @@ u.md-inline-rendered { text-decoration: underline; }
       return;
     }
 
-    // v2.0.2: continuation prefix can co-exist with own tables (v1.1 only handled cont when 0 own tables).
+    // A continuation prefix can co-exist with own tables (an earlier build handled it only when there were no own tables).
     const tables = findTables(text);
     const firstTableStart = tables.length > 0 ? tables[0].charStart : text.length;
     const prefixText = firstTableStart > 0 ? text.substring(0, firstTableStart) : '';
@@ -745,34 +743,25 @@ u.md-inline-rendered { text-decoration: underline; }
     let bridgeApplied = false;
 
     if (cont) {
-      console.debug('[discord-markdown-renderer] continuation found rows', { msgId: el.id, rowCount: cont.rows.length, firstRow: cont.rows[0], lastRow: cont.rows[cont.rows.length - 1], hasOwnTables: tables.length > 0 });
       const prev = findPreviousMessageContent(el);
       const owner = resolveTableOwner(prev);
       const prevCols = getPreviousTableColumnCount(owner);
-      if (prev === null || owner === null || prevCols === null) {
-        console.debug('[discord-markdown-renderer] continuation skip: prev/owner/prevCols null', { msgId: el.id, hasPrev: !!prev, prevId: prev && prev.id, ownerId: owner && owner.id, prevCols });
-      } else if (!sameAuthor(prev, el)) {
-        console.debug('[discord-markdown-renderer] continuation skip: author mismatch', { msgId: el.id, prevId: prev.id, prevSig: getAuthorSignal(prev), curSig: getAuthorSignal(el) });
-      } else {
+      if (prev !== null && owner !== null && prevCols !== null && sameAuthor(prev, el)) {
         const colCounts = cont.rows.map((r) => r.length);
-        if (colCounts.some((c) => c !== prevCols)) {
-          console.debug('[discord-markdown-renderer] continuation skip: column mismatch', { msgId: el.id, colCounts, prevCols });
-        } else {
-          console.debug('[discord-markdown-renderer] continuation gates passed, attempting bridge+merge', { msgId: el.id, prevCols, chained: owner !== prev });
+        if (colCounts.every((c) => c === prevCols)) {
           // Bridge (mid-row reassembly) only applies to the directly-adjacent owner. In a
           // 3+ message chain the immediate prev is already merged away (owner is further
           // back), so there is no clean adjacent tail to bridge — merge whole rows instead.
           // Only restore (un-hide) the owner's bridge fragments when we are about to RE-DO
           // that bridge (adjacent case). In the chained case the owner's existing bridge
           // belongs to an earlier, still-valid merge — un-hiding it would orphan that text
-          // back into view (the rc2 row-9 regression).
+          // back into view.
           let bridge = null;
           let prevMap = null;
           if (owner === prev) {
             restoreBridgeHiddenFragments(prev);
             prevMap = buildVisibleTextMap(prev);
             bridge = findBridgePartialRow(prevMap.text, text, prevCols, cont);
-            console.debug('[discord-markdown-renderer] bridge detect result', { msgId: el.id, bridgeFound: !!bridge, prevTextTail: prevMap.text.slice(-80), currentTextHead: text.slice(0, 80) });
           }
 
           // Tail-fill (non-adjacent split): a leading partial-row fragment in this message
@@ -806,9 +795,6 @@ u.md-inline-rendered { text-decoration: underline; }
               rows = [bridge.row, ...cont.rows];
               currentHideStart = bridge.currentTailStart;
               bridgeApplied = true;
-              console.debug('[discord-markdown-renderer] bridge applied', { msgId: el.id, bridgeRow: bridge.row });
-            } else {
-              console.debug('[discord-markdown-renderer] bridge skipped: hideRange on prev failed');
             }
           }
 
@@ -816,7 +802,6 @@ u.md-inline-rendered { text-decoration: underline; }
           const prevTablesAll = owner.querySelectorAll(`.md-table-rendered[${COLS_ATTR}]:not([${SPLIT_TABLE_ATTR}])`);
           const prevTable = prevTablesAll.length > 0 ? prevTablesAll[prevTablesAll.length - 1] : null;
           const prevTableCols = prevTable ? parseInt(prevTable.getAttribute(COLS_ATTR), 10) : null;
-          console.debug('[discord-markdown-renderer] merge target picked', { msgId: el.id, prevTableCount: prevTablesAll.length, prevTableCols, prevCols });
 
           const rollbackBridge = () => {
             if (bridgeWrapper && bridgeWrapper.parentNode) {
@@ -868,15 +853,12 @@ u.md-inline-rendered { text-decoration: underline; }
                   for (let k = 0; k < tailFill.cells.length; k++) fillPlan.tds[fillPlan.startIdx + k].textContent = tailFill.cells[k];
                   fillPlan.row.setAttribute(TAIL_FILLED_BY_ATTR, el.id);
                   fillPlan.row.setAttribute(TAIL_FILL_COUNT_ATTR, String(tailFill.cells.length));
-                  console.debug('[discord-markdown-renderer] tail-fill applied ✓', { msgId: el.id, cells: tailFill.cells });
                 }
-                console.debug('[discord-markdown-renderer] merge committed ✓', { msgId: el.id, rowsAppended: rows.length, bridgeApplied, tailFilled: !!fillPlan, prevTableCols, hasOwnTables: tables.length > 0 });
               } else {
-                console.debug('[discord-markdown-renderer] merge skipped: hideRange on current failed', { msgId: el.id, currentHideStart, contCharEnd: cont.charEnd, nodeMapLen: nodeMap.length });
                 rollbackBridge();
               }
             } else {
-              console.debug('[discord-markdown-renderer] no tbody on prevTable — falling back to headerless render', { msgId: el.id });
+              // Headerless fallback: prev has cols but no usable tbody.
               const wrapper = hideRange(nodeMap, currentHideStart, cont.charEnd);
               const tableNode = document.createElement('div');
               tableNode.className = 'md-table-rendered';
@@ -891,17 +873,12 @@ u.md-inline-rendered { text-decoration: underline; }
               }
               contFallbackRendered = true;
             }
-          } else if (prevTable && prevTableCols !== prevCols) {
-            console.debug('[discord-markdown-renderer] merge skipped: prevTable cols differ from prevCols', { prevTableCols, prevCols });
-            rollbackBridge();
           } else {
-            console.debug('[discord-markdown-renderer] merge skipped: no prevTable', { msgId: el.id });
+            // prevTable absent or cols mismatch: leave raw markdown visible.
             rollbackBridge();
           }
         }
       }
-    } else if (tables.length === 0) {
-      console.debug('[discord-markdown-renderer] continuation skip: no prefix rows + no own tables', { msgId: el.id, textPreview: text.slice(0, 120) });
     }
 
     // Split-table tail — mutually exclusive with cont (cont bails on SEP_RE).
@@ -947,27 +924,15 @@ u.md-inline-rendered { text-decoration: underline; }
                       prev.appendChild(tableNode);
                     }
                     el.setAttribute(MERGED_INTO_ATTR, prev.id);
-                    console.debug('[discord-markdown-renderer] split-table merge committed ✓', { msgId: el.id, prevId: prev.id, separatorCols: splitTail.separatorCols, rowsAppended: splitTail.rows.length, hasOwnTables: tables.length > 0 });
                   } else {
-                    console.debug('[discord-markdown-renderer] split-table skip: hideRange on current failed', { msgId: el.id, charStart: splitTail.charStart, charEnd: splitTail.charEnd });
                     const p = prevHeaderWrapper.parentNode;
                     while (prevHeaderWrapper.firstChild) p.insertBefore(prevHeaderWrapper.firstChild, prevHeaderWrapper);
                     p.removeChild(prevHeaderWrapper);
                   }
-                } else {
-                  console.debug('[discord-markdown-renderer] split-table skip: hideRange on prev header failed', { msgId: el.id, prevId: prev.id });
                 }
-              } else {
-                console.debug('[discord-markdown-renderer] split-table skip: col mismatch', { msgId: el.id, prevCols: headerCells.length, sepCols: splitTail.separatorCols });
               }
-            } else {
-              console.debug('[discord-markdown-renderer] split-table skip: prev tail not row-like or is separator', { msgId: el.id, prevTailLine });
             }
-          } else {
-            console.debug('[discord-markdown-renderer] split-table skip: prev has no non-blank line', { msgId: el.id });
           }
-        } else {
-          console.debug('[discord-markdown-renderer] split-table skip: prev null or author mismatch', { msgId: el.id, hasPrev: !!prev });
         }
       }
     }

@@ -13,9 +13,7 @@
     {
       "matches": [
         "https://discord.com/*",
-        "https://*.discord.com/*",
-        "https://canary.discord.com/*",
-        "https://ptb.discord.com/*"
+        "https://*.discord.com/*"
       ],
       "js": ["content_script.js"],
       "css": ["style.css"],

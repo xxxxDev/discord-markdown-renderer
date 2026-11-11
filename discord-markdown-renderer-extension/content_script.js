@@ -11,7 +11,7 @@
   const CONT_ATTR = 'data-md-table-continuation';
   const BRIDGE_ATTR = 'data-md-table-bridge';
   const BRIDGE_HIDDEN_ATTR = 'data-md-table-bridge-hidden';
-  // Legacy: v1.1 set MARK_ATTR to this when the whole msg was merged into prev. v2.0.2 treats it as expectedOwn=0.
+  // Legacy: an earlier build set MARK_ATTR to this when the whole msg was merged into prev; it is now treated as expectedOwn=0.
   const MERGED_VALUE = 'merged';
   const MERGED_INTO_ATTR = 'data-md-table-merged-into';
   const MERGED_WITH_ATTR = 'data-md-table-merged-with';
@@ -213,7 +213,7 @@
         text += '\n';
         return;
       }
-      // v2.0.4: Discord renders some emojis (✅❌ etc.) as <img class="emoji" alt="…">.
+      // Discord renders some emojis (✅❌ etc.) as <img class="emoji" alt="…">.
       // Without this, emoji-only table cells parse as "" — see 5/28 ✅❌ table bug.
       if (tag === 'IMG' && node.alt) {
         const alt = node.alt;
@@ -255,7 +255,6 @@
       if (endEntry.isElement) range.setEndAfter(endEntry.node);
       else range.setEnd(endEntry.node, Math.min(charEnd - endEntry.start, endEntry.node.nodeValue.length));
     } catch (e) {
-      console.warn('[discord-markdown-renderer] range error', e);
       return null;
     }
 
@@ -280,7 +279,7 @@
   // Follower messages return null — they lack their own header; caller walks back to the group leader.
   function extractAuthorFromItem(item) {
     if (!item) return null;
-    // v2.0.2: `img[alt]` alone also matched inline emoji <img>; require avatar class.
+    // `img[alt]` alone also matched inline emoji <img>; require avatar class.
     const avatar = item.querySelector('img[class*="avatar"][alt]');
     if (avatar && avatar.alt) {
       const alt = avatar.alt.trim();
@@ -645,7 +644,7 @@
       return;
     }
 
-    // v2.0.2: continuation prefix can co-exist with own tables (v1.1 only handled cont when 0 own tables).
+    // A continuation prefix can co-exist with own tables (an earlier build handled it only when there were no own tables).
     const tables = findTables(text);
     const firstTableStart = tables.length > 0 ? tables[0].charStart : text.length;
     const prefixText = firstTableStart > 0 ? text.substring(0, firstTableStart) : '';
@@ -705,8 +704,6 @@
               rows = [bridge.row, ...cont.rows];
               currentHideStart = bridge.currentTailStart;
               bridgeApplied = true;
-            } else {
-              console.debug('[discord-markdown-renderer] bridge skipped: hideRange on prev failed');
             }
           }
 
@@ -767,7 +764,6 @@
                   fillPlan.row.setAttribute(TAIL_FILL_COUNT_ATTR, String(tailFill.cells.length));
                 }
               } else {
-                console.debug('[discord-markdown-renderer] merge skipped: hideRange on current failed');
                 rollbackBridge();
               }
             } else {
@@ -790,11 +786,7 @@
             // prevTable absent or cols mismatch — leave raw markdown visible.
             rollbackBridge();
           }
-        } else {
-          console.debug('[discord-markdown-renderer] continuation skip: column mismatch', { colCounts, prevCols });
         }
-      } else if (prev && !sameAuthor(prev, el)) {
-        console.debug('[discord-markdown-renderer] continuation skip: author mismatch');
       }
     }
 
@@ -849,9 +841,6 @@
                     p.removeChild(prevHeaderWrapper);
                   }
                 }
-              } else {
-                console.debug('[discord-markdown-renderer] split-table skip: col mismatch',
-                  { prevCols: headerCells.length, sepCols: splitTail.separatorCols });
               }
             }
           }
@@ -997,6 +986,4 @@
 
   // Safety scan covers SPA route changes that don't trigger childList.
   setInterval(scheduleScan, 2000);
-
-  console.log('[discord-markdown-renderer] initialized (full-scan mode + continuation)');
 })();
